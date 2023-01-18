@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TagsRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -61,6 +63,16 @@ class Tags
     #[ORM\ManyToOne(targetEntity: TagsTypes::class, inversedBy: "tags")]
     #[ORM\JoinColumn(nullable: false)]
     private $tags_types;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Orders::class, mappedBy="tags")
+     */
+    private $orders;
+
+    public function __construct()
+    {
+        $this->orders = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -159,6 +171,36 @@ class Tags
     public function setTagsTypes(?TagsTypes $tags_types): self
     {
         $this->tags_types = $tags_types;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Orders>
+     */
+    public function getOrders(): Collection
+    {
+        return $this->orders;
+    }
+
+    public function addOrder(Orders $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setTags($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Orders $order): self
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getTags() === $this) {
+                $order->setTags(null);
+            }
+        }
 
         return $this;
     }
