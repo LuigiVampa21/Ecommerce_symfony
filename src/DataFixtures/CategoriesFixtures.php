@@ -2,16 +2,16 @@
 
 namespace App\DataFixtures;
 
+use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Entity\Categories;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 class CategoriesFixtures extends Fixture
 {
 
     private SluggerInterface $slugger;
-    public function __constructor(SluggerInterface $slugger)
+    public function __construct(SluggerInterface $slugger)
     {
         $this->slugger = $slugger;
     }
@@ -20,18 +20,28 @@ class CategoriesFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        $parent = new Categories();
-        $parent->setName('Computing');
-        $parent->setSlug($this->slugger->slug($parent->getName()));
-        $manager->persist($parent);
+        $parent = $this->createCategory('Computing', null,$manager);
         
+        $this->createCategory('Laptop', $parent,$manager); 
+        $this->createCategory('Screen', $parent,$manager);
         
+        $parent = $this->createCategory('Clothing', null,$manager);
+        
+        $this->createCategory('Men', $parent,$manager); 
+        $this->createCategory('Women', $parent,$manager);
+        $this->createCategory('Children', $parent,$manager);
+
+        $manager->flush();
+    }
+
+    public function createCategory(string $name, Categories $parent = null, ObjectManager $manager)
+    {
         $category = new Categories();
-        $category->setName('Computer');
-        $category->setSlug('computer');
+        $category->setName($name);
+        $category->setSlug($this->slugger->slug($category->getName())->lower());
         $category->setParent($parent);
         $manager->persist($category);
 
-        $manager->flush();
+        return $category;
     }
 }
