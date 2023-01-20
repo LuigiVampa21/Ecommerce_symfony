@@ -6,10 +6,11 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Entity\Categories;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+// use phpDocumentor\Reflection\Types\Integer;
 
 class CategoriesFixtures extends Fixture
 {
-
+    public $counter = 1;
     private SluggerInterface $slugger;
     public function __construct(SluggerInterface $slugger)
     {
@@ -41,6 +42,9 @@ class CategoriesFixtures extends Fixture
         $category->setSlug($this->slugger->slug($category->getName())->lower());
         $category->setParent($parent);
         $manager->persist($category);
+
+        $this->addReference('cat-'. $this->counter, $category);
+        $this->counter++;
 
         return $category;
     }
