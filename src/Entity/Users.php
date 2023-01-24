@@ -70,6 +70,11 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $city;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $is_verified = false;
+
    /**
     * @ORM\OneToMany(targetEntity=Orders::class, mappedBy="users")
     */
@@ -214,6 +219,18 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setZipcode(string $zipcode): self
     {
         $this->zipcode = $zipcode;
+
+        return $this;
+    }
+
+    public function getIsVerified(): ?bool
+    {
+        return $this->is_verified;
+    }
+
+    public function setIsVerified(bool $is_verified): self
+    {
+        $this->is_verified = $is_verified;
 
         return $this;
     }
