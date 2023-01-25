@@ -75,6 +75,11 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $is_verified = false;
 
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
+    private $reset_token;
+
    /**
     * @ORM\OneToMany(targetEntity=Orders::class, mappedBy="users")
     */
@@ -243,6 +248,18 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCity(string $city): self
     {
         $this->city = $city;
+
+        return $this;
+    }
+    
+    public function getResetToken(): ?string
+    {
+        return $this->reset_token;
+    }
+
+    public function setResetToken(string $token): self
+    {
+        $this->reset_token = $token;
 
         return $this;
     }

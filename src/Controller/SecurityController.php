@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Form\ResetPasswordRequestFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -32,5 +34,21 @@ class SecurityController extends AbstractController
     public function logout(): void
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
+    }
+
+        /**
+     * @Route("/forgot-password", name="forgot_password")
+     */
+    public function forgotPassword(Request $request):   Response
+    {
+        $form = $this->createForm(ResetPasswordRequestFormType::class);
+
+        $form->handleRequest($request);
+
+        dd($form);
+
+        return $this->render('security/reset_password_request.html.twig', [
+            'requestPassForm' => $form->createView()
+        ]);
     }
 }
