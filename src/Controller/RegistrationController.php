@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Users;
 use App\Form\RegistrationFormType;
+use App\Repository\UsersRepository;
 use App\Security\UsersAuthenticator;
 use App\Service\JWTService;
 use App\Service\SendMailService;
@@ -28,7 +29,8 @@ class RegistrationController extends AbstractController
                             UsersAuthenticator $authenticator, 
                             EntityManagerInterface $entityManager,
                             SendMailService $mail,
-                            JWTService $jwt
+                            JWTService $jwt,
+                            EntityManagerInterface $em
                             ): Response
     {
         $user = new Users();
@@ -60,7 +62,7 @@ class RegistrationController extends AbstractController
             $token = $jwt->generate($header,$payload,$this->getParameter('app.jwtsecret'));
 
             $mail->send(
-                'no-reply@adelfos.net',
+                'no-reply@adelfos.com',
                 $user->getEmail(),
                 'Email verification',
                 'register',
@@ -82,8 +84,72 @@ class RegistrationController extends AbstractController
         /**
          * @Route("/verif/{token}", name="verify_user")
          */
-    public function verifyUser($token, JWTService $jwt): Response
+    public function verifyUser($token, 
+                                JWTService $jwt, 
+                                UsersRepository $usersRepository, 
+                                EntityManagerInterface $em
+                                ): Response
     {
-        dd($jwt->getPayload($token));
+        if($jwt->isValid($token) &&
+          !$jwt->isExpired($token) && 
+           $jwt->check($token, $this->getParameter('app.jwtsecret')))
+           {
+                $payload = $jwt->getPayload($token);
+
+                $user = $usersRepository->find($payload['user_id']);
+
+                if($user && !$user->getIsVerified()){
+                    $user->setIsVerified(true);
+                    $em->flush($user);
+                    $this->addFlash('success', 'User activated');
+                    return $this->redirectToRoute('app_profile_index');
+                }
+            }
+        $this->addFlash('danger', 'Token is invalid or expired');
+        return $this->redirectToRoute('app_login');
     }
+
+
+            /**
+         * @Route("/resendverif", name="resend_verif")
+         */
+        public function resendVerif(
+                                    SendMailService $mail, 
+                                    JWTService $jwt, 
+                                    UsersRepository $usersRepository 
+                                    )
+        {
+            $user = $this->getUser();
+            if(!$user){
+                $this->addFlash('danger', 'You need to be connected to acceess this route.');
+                return $this->redirectToRoute('app_login');    
+            }
+
+            if($user->getIsVerified()){
+                $this->addFlash('warning', 'User already actived');
+                return $this->redirectToRoute('app_profile_index');    
+            }
+            
+            $header = [
+                'typ' => 'JWT',
+                'alg' => 'HS256'
+            ];
+            
+            $payload = [
+            'user_id' => $user->getId()
+            ];
+
+            $token = $jwt->generate($header, $payload, $this->getParameter('app.jwtsecret'));
+
+            $mail->send(
+                'no-reply@adelfos.com',
+                $user->getEmail(),
+                'Email verification',
+                'register',
+                compact('user', 'token')
+            );
+            $this->addFlash('success', 'Verification email sent');
+            return $this->redirectToRoute('app_profile_index');
+    }
+
 }
