@@ -22,3 +22,6 @@
 
 ###> Docker ###
 /docker-compose.yml
+
+# images
+/public/assets/uploads

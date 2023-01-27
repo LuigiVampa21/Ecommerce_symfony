@@ -21,7 +21,7 @@
 								{{ product.name }}
 							</h4>
                             <p class="card-text">{{ product.description }}</p>
-                            <a href="#" class="btn btn-primary">See Details</a>
+                            <a href="{{ path('app_products_details', {slug: product.slug}) }}" class="btn btn-primary">See Details</a>
 						</div>
 					</article>
 				</div>
