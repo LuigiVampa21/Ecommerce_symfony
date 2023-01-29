@@ -8,6 +8,7 @@ use App\Repository\ProductsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ProductsRepository::class)
@@ -26,6 +27,8 @@ class Products
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="A product needs a name")
+     * @Assert\Length(min=5, max=25, minMessage="A product needs a 5chars name minimum", maxMessage="A product needs a 25chars name top ")
      */
     private $name;
 
@@ -36,11 +39,13 @@ class Products
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\PositiveOrZero(message="A price can not be negative")
      */
     private $price;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\PositiveOrZero(message="A stock can not be negative")
      */
     private $stock;
 

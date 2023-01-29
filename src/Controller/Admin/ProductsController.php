@@ -60,8 +60,8 @@ class ProductsController extends AbstractController
             $slug = $slugger->slug($product->getName());
             $product->setSlug($slug);
         
-            $price = $product->getPrice() * 100;
-            $product->setPrice($price);
+            // $price = $product->getPrice() * 100;
+            // $product->setPrice($price);
 
             $em->persist($product);
             $em->flush();
@@ -92,8 +92,8 @@ class ProductsController extends AbstractController
     {
         $this->denyAccessUnlessGranted('PRODUCT_EDIT', $product);
 
-        $price = $product->getPrice() / 100;
-        $product->setPrice($price);
+        // $price = $product->getPrice() / 100;
+        // $product->setPrice($price);
 
         $productForm = $this->createForm(ProductsFormType::class, $product);
 
@@ -115,8 +115,8 @@ class ProductsController extends AbstractController
             $slug = $slugger->slug($product->getName());
             $product->setSlug($slug);
         
-            $price = $product->getPrice() * 100;
-            $product->setPrice($price);
+            // $price = $product->getPrice() * 100;
+            // $product->setPrice($price);
 
             $em->persist($product);
             $em->flush();
