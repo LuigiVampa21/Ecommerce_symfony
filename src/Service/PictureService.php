@@ -68,7 +68,7 @@ class PictureService
 
         imagecopyresampled($resized_picture, $picture_source, 0, 0, $src_x, $src_y, $width, $height, $squareSize, $squareSize);
 
-        $path = $this->params->get('images_directory') . $folder; 
+        $path = $this->params->get('images_directory') . '/public/assets/uploads/' . $folder; 
 
         if(!file_exists($path . '/mini/')){
             mkdir($path . '/mini/', 0755, true);
@@ -79,6 +79,31 @@ class PictureService
         $picture->move($path . '/', $file);
 
         return $file;
+    }
+
+
+    public function delete(string $file, ?string $folder = '', ?int $width = 250, ?int $height = 250)
+    {
+        if($file !== 'default.webp'){
+            $success = false;
+            $path = $this->params->get('images_directory') . '/public/assets/uploads/' . $folder;
+
+            $mini = $path . '/mini/' . $width . 'x' . $height . '-' . $file;
+
+            if(file_exists($mini)){
+                unlink($mini);
+                $success = true;
+            }
+
+            $original = $path . '/' . $file;
+
+            if(file_exists($original)){
+                unlink($original);
+                $success = true;
+            }
+            return $success;
+        }
+        return false;
     }
 
 }

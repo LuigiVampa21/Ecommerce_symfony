@@ -54,7 +54,7 @@ class Products
     private $categories;
 
     /**
-     * @ORM\OneToMany(targetEntity=Images::class, mappedBy="products", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Images::class, mappedBy="products", orphanRemoval=true, cascade={"persist"})
      */
     #[ORM\OneToMany(targetEntity: Images::class, mappedBy: "products", orphanRemoval: true)]
     private $images;
