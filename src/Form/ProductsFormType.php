@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Categories;
 use App\Entity\Products;
+use App\Repository\CategoriesRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,7 +21,15 @@ class ProductsFormType extends AbstractType
             ->add('stock')
             ->add('categories', EntityType::class, [
                 'class' => Categories::class,
-                'choice_label' => 'name'
+                'choice_label' => 'name',
+                'label' => 'category',
+                'group_by' => 'parent.name',
+                'query_builder' => function (CategoriesRepository $cr)
+                {
+                    return $cr->createQueryBuilder('c')
+                        ->where('c.parent IS NOT NULL')
+                        ->orderBy('c.name', 'ASC');
+                }
             ])
         ;
     }

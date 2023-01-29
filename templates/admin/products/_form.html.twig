@@ -5,5 +5,5 @@
     {{ form_row(productForm.price) }}
     {{ form_row(productForm.stock) }}
     <br>
-    <button type="submit" class="btn btn-primary">Send</button>
+    <button type="submit" class="btn btn-primary">{{ button_label| default('Add') }}</button>
 {{ form_end(productForm) }}
